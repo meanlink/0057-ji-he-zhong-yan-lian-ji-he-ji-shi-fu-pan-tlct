@@ -1,0 +1,4 @@
+:root{--s-page:oklch(95% .029 78);--s-panel:oklch(98% .015 81);--s-accent:oklch(40% .112 35);--s-ink:oklch(25% .034 45)}
+.checkline {display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:1rem}
+.tagbox {border-block:1px solid var(--s-line);border-inline-start:4px solid var(--s-accent);padding:.8rem;background:var(--s-panel)}
+.step-ledger li {border-bottom:1px solid var(--s-line);padding:.7rem;line-height:1.8}
