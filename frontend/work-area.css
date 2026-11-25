@@ -15,4 +15,15 @@
 .statline dd { margin: .25rem 0 0; font-size: clamp(1.25rem, 3vw, 2.3rem); font-variant-numeric: tabular-nums; line-height: 1.2; }
 .toolrow { display: flex; flex-wrap: wrap; align-items: end; gap: .65rem; margin: 1.2rem 0; }
 .callout { padding: .8rem 1rem; border-inline-start: 3px solid var(--s-accent); background: var(--s-panel); }
+.correction { margin-top: 2rem; }
+.correction .hint { color: var(--s-muted); }
+.correction-rows { display: grid; gap: .6rem; }
+.correction-row { display: grid; grid-template-columns: minmax(7rem,1fr) minmax(8rem, .6fr); gap: .5rem .8rem; border: 1px solid var(--s-line); padding: .55rem .7rem; margin: 0; }
+.correction-row legend { font-weight: 600; padding: 0 .25rem; }
+.correction-progress { margin-top: 1.2rem; }
+.correction-progress .detail { color: var(--s-error); font-weight: 400; }
+.status-chip.effective { border-color: var(--s-ok); color: var(--s-ok); }
+.status-chip.failed, .status-chip.returned { border-color: var(--s-error); color: var(--s-error); }
+.status-chip.queued, .status-chip.running { border-color: var(--s-accent); color: var(--s-accent); }
 @media (max-width:767px) { .split { grid-template-columns:minmax(0,1fr); } .intro { margin-bottom:1.2rem; } }
+@media (max-width:560px) { .correction-row { grid-template-columns: 1fr; } }

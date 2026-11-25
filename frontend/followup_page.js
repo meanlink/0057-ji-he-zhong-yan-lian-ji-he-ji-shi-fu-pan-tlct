@@ -13,7 +13,16 @@ export async function render(outlet,user) {
     if(!picker.value)return;
     const [rows,people]=await Promise.all([data(picker.value,'followup'),data(picker.value,'roster')]);
     outlet.querySelector('.follow').innerHTML=table('已开立补查',['记录码','事项','复核人'],rows.map(r=>[r.code,r.action,r.owner]));
-    if(outlet.querySelector('[name=code]'))outlet.querySelector('[name=code]').innerHTML=options(people.filter(p=>p.kind==='censored').map(p=>[p.code,p.code]));
+    if(outlet.querySelector('[name=code]')){
+      const used=new Set(rows.map(r=>r.code));
+      const eligible=people.filter(p=>p.kind==='censored'&&!used.has(p.code));
+      const select=outlet.querySelector('[name=code]');
+      select.innerHTML=options(eligible.map(p=>[p.code,p.code]))+
+        (eligible.length?'':'<option value="" disabled>当前没有可开立补查的记录</option>');
+      select.toggleAttribute('disabled',!eligible.length);
+      const button=outlet.querySelector('form button');
+      if(button)button.toggleAttribute('disabled',!eligible.length);
+    }
   }
   picker.onchange=refresh;
   onSubmit(outlet.querySelector('form'),async form=>{await save(picker.value,'followup',form);await refresh();return '漏记补查单已登记';});

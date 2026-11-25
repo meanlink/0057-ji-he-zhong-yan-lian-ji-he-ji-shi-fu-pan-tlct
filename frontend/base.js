@@ -1,5 +1,9 @@
 export const roles = Object.freeze({operator: '录入员', reviewer: '复核员', viewer: '查阅员'})
 export const jobStates = Object.freeze({queued: '排队', running: '运行中', done: '完成', failed: '失败'})
+export const correctionStates = Object.freeze({
+  queued: '等待重算', running: '重算中', effective: '已生效',
+  failed: '重算失败', returned: '已退回复核',
+})
 let session
 try { session = JSON.parse(sessionStorage.getItem('yangyang-session')) } catch { session = null }
 

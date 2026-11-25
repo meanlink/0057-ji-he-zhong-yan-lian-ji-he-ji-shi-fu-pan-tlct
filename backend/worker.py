@@ -14,6 +14,24 @@ HEARTBEAT = Path("/tmp/yangyang-worker-heartbeat")
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("worker")
 
+
+def _mark_correction_failed(connection, payload, detail):
+    """任务事务回滚后，在独立事务里把在途更正单置为 failed，使其可重试。"""
+    correction_id = payload.get("correction_id") if isinstance(payload, dict) else None
+    if not correction_id or correction_id < 0:
+        return
+    try:
+        with connection.transaction():
+            connection.execute(
+                """UPDATE muster_corrections
+                   SET status='failed', detail=%s, updated_at=now()
+                   WHERE id=%s AND status IN ('queued','running')""",
+                (detail, correction_id),
+            )
+    except Exception:
+        log.exception("Could not mark correction %s as failed", correction_id)
+
+
 def process(connection):
     job = connection.execute("""
         SELECT id,kind,payload FROM app_jobs
@@ -34,11 +52,14 @@ def process(connection):
     except Exception as exc:
         log.exception("Job %s failed", job["id"])
         detail = str(exc.detail) if isinstance(exc, HTTPException) else "后台计算失败，请核对输入后重试"
-        connection.execute(
-            "UPDATE app_jobs SET status='failed',error=%s,finished_at=now() WHERE id=%s",
-            (detail, job["id"]),
-        )
+        with connection.transaction():
+            connection.execute(
+                "UPDATE app_jobs SET status='failed',error=%s,finished_at=now() WHERE id=%s",
+                (detail, job["id"]),
+            )
+        _mark_correction_failed(connection, job["payload"], detail)
     return True
+
 
 if __name__ == "__main__":
     while True:

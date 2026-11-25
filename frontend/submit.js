@@ -1,6 +1,7 @@
 import {h, notice} from './base.js';
-export function options(items) {
-  return items.map(([value, label]) => `<option value="${h(value)}">${h(label)}</option>`).join('');
+export function options(items, selected = null) {
+  return items.map(([value, label]) =>
+    `<option value="${h(value)}"${value === selected ? ' selected' : ''}>${h(label)}</option>`).join('');
 }
 export const feedback = '<p role="status" aria-live="polite"></p>';
 export function onSubmit(form, callback) {
